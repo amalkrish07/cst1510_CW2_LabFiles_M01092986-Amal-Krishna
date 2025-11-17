@@ -58,6 +58,8 @@ def login_user(username, password):
     return False
 
 def validate_username(username):
+    if len(username) < 3 or len(username) > 20:
+        return False, "Username must be 3-20 characters long"
     if not username:
         return False, "Username cannot be empty"
     if " " in username:
@@ -67,8 +69,8 @@ def validate_username(username):
     return True, ""
 
 def validate_password(password):
-    if len(password) < 8:
-        return False, "Password must be at least 8 characters long"
+    if len(password) < 6 or len(password) > 50:
+        return False, "Password must be 6-50 characters long"
     if not re.search(r"[A-Z]", password):
         return False, "Password must contain at least one uppercase letter"
     if not re.search(r"[a-z]", password):
