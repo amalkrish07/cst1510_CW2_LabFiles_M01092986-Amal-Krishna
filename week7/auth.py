@@ -1,6 +1,8 @@
 import os
 import bcrypt
 
+USER_DATA_FILE = "users.txt"
+
 def hash_password(plain_text_password):
     password_bytes = plain_text_password.encode('utf-8')
     salt = bcrypt.gensalt()
@@ -14,17 +16,19 @@ def verify_password(plain_text_password, hashed_password):
 
     return bcrypt.checkpw(password_bytes, hashed_bytes)
 
-# TEMPORARY TEST CODE - Remove after testing
-test_password = "SecurePassword123"
+def register_user(username, password, filename="users.txt"):
+    if not os.path.exists(filename):
+        open(filename, "w").close()
 
-# Test hashing
-hashed = hash_password(test_password)
-print(f"Original password: {test_password}")
-print(f"Hashed password: {hashed}")
-print(f"Hash length: {len(hashed)} characters")
-# Test verification with correct password
-is_valid = verify_password(test_password, hashed)
-print(f"\nVerification with correct password: {is_valid}")
-# Test verification with incorrect password
-is_invalid = verify_password("WrongPassword", hashed)
-print(f"Verification with incorrect password: {is_invalid}")
+    with open(filename, "r") as f:
+        for line in f:
+            stored_username = line.strip().split(",")[0]
+            if username == stored_username:
+                return False
+
+    hashed = hash_password(password)
+
+    with open(filename, "a") as f:
+        f.write(f"{username},{hashed}\n")
+
+    return True
