@@ -1,8 +1,23 @@
 import os
 import bcrypt
 import re
+import time
+import secrets
 
+FAILED_ATTEMPTS_FILE = "failed_attempts.txt"
+LOCKOUT_DURATION = 5 * 60
+MAX_ATTEMPTS = 3
+SESSIONS_FILE = "sessions.txt"
 USER_DATA_FILE = "users.txt"
+
+
+def create_session(username):
+    token = secrets.token_hex(16)
+    timestamp = time.time()
+
+    with open(SESSIONS_FILE, "a") as f:
+        f.write(f"{username},{token},{timestamp}\n")
+    return token
 
 def hash_password(plain_text_password):
     password_bytes = plain_text_password.encode('utf-8')
@@ -17,7 +32,7 @@ def verify_password(plain_text_password, hashed_password):
 
     return bcrypt.checkpw(password_bytes, hashed_bytes)
 
-def register_user(username, password):
+def register_user(username, password, role="user"):
     if not os.path.exists(USER_DATA_FILE):
         open(USER_DATA_FILE, "w").close()
 
@@ -30,7 +45,7 @@ def register_user(username, password):
     hashed = hash_password(password)
 
     with open(USER_DATA_FILE, "a") as f:
-        f.write(f"{username},{hashed}\n")
+        f.write(f"{username},{hashed},{role}\n")
 
     return True
 
@@ -45,16 +60,49 @@ def user_exists(username):
                 return True
     return False
 
+def load_failed_attempts():
+    attempts = {}
+    if os.path.exists(FAILED_ATTEMPTS_FILE):
+        with open(FAILED_ATTEMPTS_FILE, "r") as f:
+            for line in f:
+                username, count, timestamp = line.strip().split(",")
+                attempts[username] = (int(count), float(timestamp))
+    return attempts
+
+def save_failed_attempts(attempts):
+    with open(FAILED_ATTEMPTS_FILE, "w") as f:
+        for username, (count, timestamp) in attempts.items():
+            f.write(f"{username},{count},{timestamp}\n")
+
 def login_user(username, password):
+    attempts = load_failed_attempts()
+
+    if username in attempts:
+        count, last_time = attempts[username]
+        if count >= MAX_ATTEMPTS and time.time() - last_time < LOCKOUT_DURATION:
+            print(f"Account locked. Try again in {int((LOCKOUT_DURATION - (time.time() - last_time)) // 60)} min")
+            return False
+        elif time.time() - last_time >= LOCKOUT_DURATION:
+            attempts[username] = (0, 0)
+            save_failed_attempts(attempts)
+
     if not os.path.exists(USER_DATA_FILE):
         return False
 
     with open(USER_DATA_FILE, "r") as f:
         for line in f:
-            stored_username, stored_hash = line.strip().split(",", 1)
+            stored_username, stored_hash, *_ = line.strip().split(",", 2)
             if username == stored_username:
-                return verify_password(password, stored_hash)
-
+                if verify_password(password, stored_hash):
+                    attempts[username] = (0, 0)
+                    save_failed_attempts(attempts)
+                    return True
+                else:
+                    count, _ = attempts.get(username, (0, 0))
+                    attempts[username] = (count + 1, time.time())
+                    save_failed_attempts(attempts)
+                    print(f"Incorrect password. Attempt {attempts[username][0]}/{MAX_ATTEMPTS}")
+                    return False
     return False
 
 def validate_username(username):
@@ -81,6 +129,26 @@ def validate_password(password):
         return False, "Password must contain at least one special character"
     return True, ""
 
+def check_password_strength(password):
+    score = 0
+
+    if len(password) >= 8:
+        score += 1
+    if re.search(r"[A-Z]", password):
+        score += 1
+    if re.search(r"[a-z]", password):
+        score += 1
+    if re.search(r"[0-9]", password):
+        score += 1
+    if re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        score += 1
+
+    if score <= 2:
+        return "Weak"
+    elif score <= 4:
+        return "Medium"
+    else:
+        return "Strong"
 
 def display_menu():
     print("\n" + "="*50)
@@ -113,13 +181,21 @@ def main():
                 print(f"Error: {error_msg}")
                 continue
 
+            strength = check_password_strength(password)
+            print(f"Password Strength: {strength}")
+
             password_confirm = input("Confirm password: ").strip()
             if password != password_confirm:
                 print("Error: Passwords do not match.")
                 continue
 
-            register_user(username, password)
-            print("\nUser registered successfully.")
+            role = input("Enter role (user/admin/analyst): ").strip().lower()
+            if role not in ["user", "admin", "analyst"]:
+                print("Error: Invalid role. Defaulting to 'user'.")
+                role = "user"
+
+            register_user(username, password, role)
+            print(f"\nUser registered successfully with role: {role}")
 
         elif choice == '2':
             print("\n--- USER LOGIN ---")
@@ -127,7 +203,9 @@ def main():
             password = input("Enter your password: ").strip()
 
             if login_user(username, password):
+                token = create_session(username)
                 print("\nYou are now logged in.")
+                print(f"Your session token: {token}")
                 input("\nPress Enter to return to main menu...")
             else:
                 print("\nError: Invalid username or password.")
