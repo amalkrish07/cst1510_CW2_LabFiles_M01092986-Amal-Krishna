@@ -8,25 +8,48 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 USERS_FILE = BASE_DIR / "DATA" / "users.txt"
 
 def register_user(username, password, role='user'):
-    if get_user_by_username(username):
-        return False, f"User '{username}' already exists."
+    conn = connect_database()
+    cursor = conn.cursor()
 
-    password_hash = bcrypt.hashpw(
-        password.encode('utf-8'),
-        bcrypt.gensalt()
-    ).decode('utf-8')
-    insert_user(username, password_hash, role)
-    return True, f"User '{username}' registered successfully."
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    if cursor.fetchone():
+        conn.close()
+        return False, f"Username '{username}' already exists."
+
+    password_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    password_hash = hashed.decode('utf-8')
+
+    cursor.execute(
+        "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
+        (username, password_hash, role)
+    )
+    conn.commit()
+    conn.close()
+
+    return True, f"User '{username}' registered successfully!"
 
 
 def login_user(username, password):
-    user = get_user_by_username(username)
+    conn = connect_database()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = cursor.fetchone()
+    conn.close()
+
     if not user:
-        return False, "User not found."
+        return False, "Username not found."
+
     stored_hash = user[2]
-    if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
-        return True, "Login successful!"
-    return False, "Incorrect password."
+    password_bytes = password.encode('utf-8')
+    hash_bytes = stored_hash.encode('utf-8')
+
+    if bcrypt.checkpw(password_bytes, hash_bytes):
+        return True, f"Welcome, {username}!"
+    else:
+        return False, "Invalid password."
 
 def migrate_users_from_file(filepath=USERS_FILE):
     if not filepath.exists():
