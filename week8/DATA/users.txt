@@ -1,0 +1,5 @@
+amy,$2b$12$30gCkcEy8k8QwNazf2Exk.kK7veA9EHMpzzVwNCvL/fo7AGtiBiBi,user
+ren,$2b$12$cf4uYbTulhSKXbHhOKvCHuR6n0e1UKZZNhgyz6PADrBXyg9m6v8rO,admin
+jacob,$2b$12$QkYMN/3ZA1FI.DLcgPX5J.upnObUeAXs1.KB3UGEWFw.WqqKS8hSW,analyst
+sarah,$2b$12$iR3tJylIcA7HF6tb606CquT94/3PnIqFmtGqtplZ6wRNq93LPz/kO,user
+neil,$2b$12$m8QpiRIL3l73FdXLLZLnkeqvTd3S.aORxHwA4eY9mI6I4.1yEQN1.,user
