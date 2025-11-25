@@ -1,16 +1,15 @@
-import sqlite3
+import pandas as pd
 from pathlib import Path
-from data.db import connect_database, create_all_tables
-from services.user_service import migrate_users_from_file
-from services.load_csv import load_all_csv_data
+from app.data.db import connect_database
+from app.data.schema import create_all_tables
+from app.services.user_service import migrate_users_from_file
+from app.services.load_csv import load_all_csv_data
+from app.data.db import DB_PATH
+
 
 DB_PATH = Path("project_database.db")
 
 def setup_database_complete():
-    print("\n" + "="*60)
-    print("STARTING COMPLETE DATABASE SETUP")
-    print("="*60)
-
     print("\n[1/5] Connecting to database...")
     conn = connect_database()
     print("Connected")
@@ -19,8 +18,8 @@ def setup_database_complete():
     create_all_tables(conn)
 
     print("\n[3/5] Migrating users from users.txt...")
-    user_count = migrate_users_from_file(conn)
-    print(f"       Migrated {user_count} users")
+    user_count = migrate_users_from_file()
+    print(f"Migrated {user_count} users")
 
     print("\n[4/5] Loading CSV data...")
     total_rows = load_all_csv_data(conn)
@@ -31,7 +30,6 @@ def setup_database_complete():
     tables = ['users', 'cyber_incidents', 'datasets_metadata', 'it_tickets']
     print("\n Database Summary:")
     print(f"{'Table':<25} {'Row Count':<15}")
-    print("-" * 40)
 
     for table in tables:
         cursor.execute(f"SELECT COUNT(*) FROM {table}")
@@ -39,10 +37,6 @@ def setup_database_complete():
         print(f"{table:<25} {count:<15}")
 
     conn.close()
-
-    print("\n" + "="*60)
-    print(" DATABASE SETUP COMPLETE!")
-    print("="*60)
     print(f"\n Database location: {DB_PATH.resolve()}")
     print("\nYou're ready for Week 9 (Streamlit web interface)!")
 
