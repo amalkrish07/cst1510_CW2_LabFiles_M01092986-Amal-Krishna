@@ -13,7 +13,7 @@ def setup_database_complete():
 
     print("\n[1/5] Connecting to database...")
     conn = connect_database()
-    print("       Connected")
+    print("Connected")
 
     print("\n[2/5] Creating database tables...")
     create_all_tables(conn)
