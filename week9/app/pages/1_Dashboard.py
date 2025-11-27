@@ -1,57 +1,51 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../week8')))
+
+from app.data.db import connect_database
+from app.data import incidents, tickets
 
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
 
-# Ensure state keys exist (in case user opens this page first)
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-# Guard: if not logged in, send user back
+if "role" not in st.session_state:
+    st.session_state.role = ""
 if not st.session_state.logged_in:
-    st.error("You must be logged in to view the dashboard.")
-    if st.button("Go to login page"):
-        st.switch_page("Home.py")   # back to the first page
+    st.error("You must log in to access the dashboard.")
     st.stop()
 
-# If logged in, show dashboard content
 st.title("📊 Dashboard")
-st.success(f"Hello, **{st.session_state.username}**! You are logged in.")
+st.success(f"Welcome, {st.session_state.username} ({st.session_state.role})")
 
-# Example dashboard layout
-st.caption("This is just demo content – replace with your own dashboard.")
+conn = connect_database()
 
-# Sidebar filters
-with st.sidebar:
-    st.header("Filters")
-    n_points = st.slider("Number of data points", 10, 200, 50)
-
-# Fake data
-data = pd.DataFrame(
-    np.random.randn(n_points, 3),
-    columns=["A", "B", "C"]
-)
-
-col1, col2 = st.columns(2)
+st.header("Summary Metrics")
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.subheader("Line chart")
-    st.line_chart(data)
+    total_incidents = len(incidents.get_all_incidents(conn))
+    st.metric("Total Incidents", total_incidents)
 
 with col2:
-    st.subheader("Bar chart")
-    st.bar_chart(data)
+    total_tickets = len(tickets.get_all_tickets(conn))
+    st.metric("Total Tickets", total_tickets)
 
-with st.expander("See raw data"):
-    st.dataframe(data)
+with col3:
+    high_sev = incidents.get_high_severity_by_status(conn)
+    st.metric("High Severity Open", high_sev["count"].sum() if not high_sev.empty else 0)
 
-# Logout button
-st.divider()
-if st.button("Log out"):
-    st.session_state.logged_in = False
-    st.session_state.username = ""
-    st.info("You have been logged out.")
-    st.switch_page("Home.py")
+st.header("Incidents by Type")
+incident_counts = incidents.get_incidents_by_type_count(conn)
+if not incident_counts.empty:
+    st.bar_chart(incident_counts.set_index("incident_type"))
+
+with st.expander("All Incidents"):
+    st.dataframe(incidents.get_all_incidents(conn))

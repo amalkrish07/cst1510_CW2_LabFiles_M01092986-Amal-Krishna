@@ -1,14 +1,12 @@
 import streamlit as st
-from app.auth import login_user, register_new_user
+from auth import login_user, register_new_user
 
 st.set_page_config(page_title="Login", page_icon="🔐", layout="centered")
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-
 if "username" not in st.session_state:
     st.session_state.username = ""
-
 if "role" not in st.session_state:
     st.session_state.role = ""
 
