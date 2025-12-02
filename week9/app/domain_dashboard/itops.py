@@ -1,11 +1,8 @@
 import streamlit as st
 import pandas as pd
-import os
-import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../week8')))
-from app.data.db import connect_database
-from app.data import incidents, tickets
+from app.db_files.db import connect_database
+from app.db_files import incidents, tickets
 
 def show_dashboard(st):
     conn = connect_database()

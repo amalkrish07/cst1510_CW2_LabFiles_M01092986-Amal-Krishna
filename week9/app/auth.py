@@ -1,9 +1,9 @@
+import streamlit as st
 import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../week8')))
-
-from app.data.users import insert_user, get_user_by_username
+from app.db_files.users import insert_user, get_user_by_username
 
 import bcrypt
 

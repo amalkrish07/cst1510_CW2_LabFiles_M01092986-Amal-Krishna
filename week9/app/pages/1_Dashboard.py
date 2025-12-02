@@ -1,11 +1,10 @@
 import streamlit as st
 import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../week8')))
-
-from app.data.db import connect_database
-from app.data import incidents, tickets
+from app.db_files.db import connect_database
+from app.db_files import incidents, tickets
 
 st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
 

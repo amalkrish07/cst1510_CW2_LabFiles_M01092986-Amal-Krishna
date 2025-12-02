@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../week8')))
-from app.data.db import connect_database
-from app.data import schema
+from app.db_files.db import connect_database
+from app.db_files import schema
 
 st.set_page_config(page_title="Datasets", page_icon="📂", layout="wide")
 

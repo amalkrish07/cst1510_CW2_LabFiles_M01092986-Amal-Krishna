@@ -1,12 +1,12 @@
 import streamlit as st
 import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../domain-dashboard')))
 
-from cybersecurity import show_dashboard as show_cybersec
-from datascience import show_dashboard as show_ds
-from itops import show_dashboard as show_itops
+from app.domain_dashboard.cybersecurity import show_dashboard as show_cybersec
+from app.domain_dashboard.datascience import show_dashboard as show_ds
+from app.domain_dashboard.itops import show_dashboard as show_itops
 
 st.set_page_config(page_title="Analytics", page_icon="📈", layout="wide")
 

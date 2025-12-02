@@ -1,5 +1,9 @@
 import streamlit as st
-from auth import login_user, register_new_user
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app.auth import login_user, register_new_user
 
 st.set_page_config(page_title="Login", page_icon="🔐", layout="centered")
 
