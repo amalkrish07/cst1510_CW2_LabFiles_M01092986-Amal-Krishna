@@ -1,4 +1,4 @@
-# Week 9: Cyber Intelligence Platform
+# Week 10: AI Integration in Multi-Domain Intelligence Platform
 
 **Student Name:** Amal Krishna Mangalappilly Udhayakumar
 **Student ID:** M01092986
@@ -6,39 +6,25 @@
 
 ## Project Description
 
-A Streamlit-based web application for managing cybersecurity incidents, IT tickets, and datasets. Users can register, log in, and view domain-specific dashboards with metrics and visualizations. CRUD operations are supported for all data types.
+In Week 10, the platform was enhanced with AI-powered assistants integrated into each domain dashboard. Users can now interact with AI to get insights, guidance, and analysis directly within the dashboards.
 
 ## Features
 
-### Authentication
+### Domain AI Assistants
 
-- User registration with secure password hashing (bcrypt)
-- Login/logout with session management
-- Role-based access control (`user`, `admin`, `analyst`)
+- Cybersecurity Dashboard: Analyze incidents, threats, and provide technical guidance
+- Data Science Dashboard: Assist with data analysis, visualization, and statistical insights
+- IT Operations Dashboard: Help troubleshoot issues, optimize systems, and manage tickets
 
-### Dashboard & Analytics
+### AI Chat Functionality
 
-- Domain-specific metrics (Cybersecurity, Data Science, IT Operations)
-- Visualizations with bar and line charts
-- Summary metrics with `st.metric()`
+- Chat available in a sidebar for each dashboard
+- Separate chat history per dashboard
+- Clear Chat button to reset conversations
+- Powered by OpenAI GPT-4.1-mini
 
-### CRUD Operations
+### Implementation Notes
 
-- Incidents: create, read, update, delete
-- Tickets: create, read, update, delete
-- Datasets metadata: manage records efficiently
-
-### Pages
-
-- **Home:** Login/Register
-- **Dashboard:** Summary metrics and tables
-- **Analytics:** Domain insights with charts
-- **Incidents:** Manage incident records
-- **Tickets:** Manage IT tickets
-- **Datasets:** Manage datasets metadata
-- **Settings:** User account management
-
-### Database
-
-- SQLite database (`intelligence_platform.db`) stored in `week8/app/DATA/`
-- Tables: `users`, `cyber_incidents`, `it_tickets`, `datasets_metadata`
+- API key securely stored in `.env` (OPENAI_API_KEY)
+- Uses streamlit for the UI and openai Python package for AI interaction
+- Session state manages chat history independently for each domain
