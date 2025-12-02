@@ -3,7 +3,6 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../week8')))
 
-from app.data.db import connect_database
 from app.data.users import insert_user, get_user_by_username
 
 import bcrypt

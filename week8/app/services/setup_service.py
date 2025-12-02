@@ -38,6 +38,4 @@ def setup_database_complete():
 
     conn.close()
     print(f"\n Database location: {DB_PATH.resolve()}")
-    print("\nYou're ready for Week 9 (Streamlit web interface)!")
-
 setup_database_complete()

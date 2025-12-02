@@ -1,0 +1,5 @@
+ticket_id,priority,status,department,title,description,date_created
+TCK-2201,High,Open,IT,Server Down,Main server is offline,2024-10-11
+TCK-2202,Low,Closed,HR,Password Reset,User cannot access account,2024-10-12
+TCK-2203,Medium,Investigating,Network,Slow Internet,Office WiFi unstable,2024-10-14
+TCK-2204,High,Open,Security,Unauthorized Access,Unknown login attempts detected,2024-10-16

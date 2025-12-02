@@ -1,0 +1,5 @@
+name,category,source,date_added,records,size_mb
+Network Logs October,Network Logs,Internal,2024-10-15,12000,30.5
+HR Files Dump,HR Records,Confidential,2024-10-20,800,2.1
+Email Server Logs,Email Logs,Internal,2024-10-22,45000,55.3
+Firewall Events,Security Logs,Internal,2024-10-25,150000,120.8

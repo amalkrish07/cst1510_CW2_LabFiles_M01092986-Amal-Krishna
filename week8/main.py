@@ -32,51 +32,21 @@ if __name__ == "__main__":
 
     conn = connect_database()
 
+if len(get_all_incidents(conn)) == 0 and len(get_all_datasets(conn)) == 0 and len(get_all_tickets(conn)) == 0:
+    rows = load_all_csv_data(conn)
+    print(f"Loaded {rows} rows from CSV files.")
+
     success, msg = register_user("alice", "SecurePass123!", "analyst")
     print(msg)
 
     success, msg = login_user("alice", "SecurePass123!")
     print(msg)
 
-    incident_id = insert_incident(
-        conn,
-        "2024-11-05",
-        "Phishing",
-        "High",
-        "Open",
-        "Suspicious email detected",
-        "alice"
-    )
-    print(f"Created incident #{incident_id}")
-
     df_incidents = get_all_incidents(conn)
     print(f"Total incidents: {len(df_incidents)}")
 
-    dataset_id = insert_dataset(
-        conn,
-        "Network Logs Nov",
-        "Network Logs",
-        "Internal",
-        "2024-11-10",
-        5000,
-        12.5
-    )
-    print(f"Created dataset #{dataset_id}")
-
     df_datasets = get_all_datasets(conn)
     print(f"Total datasets: {len(df_datasets)}")
-
-    ticket_id = insert_ticket(
-        conn,
-        "TCK-1001",
-        "High",
-        "Open",
-        "Network",
-        "Router outage",
-        "Main office router down",
-        "2024-11-05"
-    )
-    print(f"Created ticket #{ticket_id}")
 
     df_tickets = get_all_tickets(conn)
     print(f"Total tickets: {len(df_tickets)}")

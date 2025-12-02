@@ -1,0 +1,5 @@
+date,type,severity,status,description,reported_by
+2024-10-05,Phishing,High,Open,Employee received suspicious email,alice
+2024-10-10,Malware,Medium,Investigating,Malware detected on workstation,bob
+2024-10-12,Data Breach,Critical,Open,Unauthorized access to database,carol
+2024-10-14,DDoS,High,Closed,Traffic spike from unknown sources,alice
